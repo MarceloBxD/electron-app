@@ -14,7 +14,7 @@ const schema = {
   },
 };
 
-const store = new Store({ schema });
+// const store = new Store({ schema });
 
 let tray = null;
 
