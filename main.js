@@ -1,7 +1,5 @@
-const { app, Tray, Menu } = require("electron");
+const { app, Tray, Menu, dialog } = require("electron");
 const { resolve } = require("path");
-
-console.log();
 
 let tray = null;
 
@@ -14,16 +12,31 @@ app
 
     const contextMenu = Menu.buildFromTemplate([
       {
+        label: "Add File",
+        accelerator: "CmdOrCtrl+O",
+        click: () => {
+          dialog
+            .showOpenDialog({
+              properties: ["openDirectory"],
+            })
+            .then((fileObj) => {
+              if (!fileObj.canceled) {
+                console.log(fileObj.filePaths[0]);
+              }
+            });
+        },
+      },
+      {
         label: "Fiat Titano",
-        type: "radio",
+        type: "normal",
       },
       {
         label: "Jeep Compass 4XE",
-        type: "radio",
+        type: "normal",
       },
       {
         label: "Fiat Argo",
-        type: "radio",
+        type: "normal",
       },
     ]);
 
