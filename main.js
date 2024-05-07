@@ -14,7 +14,7 @@ const schema = {
   },
 };
 
-// const store = new Store({ schema });
+const store = new Store({ schema });
 
 let tray = null;
 
@@ -25,22 +25,22 @@ app
       resolve(__dirname, "assets/images", "trayiconTemplate.png")
     );
 
-    // const projects = store.get("projects");
+    console.log(store.get("projects"));
 
     const contextMenu = Menu.buildFromTemplate([
       {
         label: "Add File",
         accelerator: "CmdOrCtrl+O",
         click: () => {
-          dialog
+          const [path] = dialog
             .showOpenDialog({
               properties: ["openDirectory"],
             })
             .then((fileObj) => {
               if (!fileObj.canceled) {
-                console.log(fileObj.filePaths[0]);
+                console.log("path", path);
                 // shell.openPath(fileObj.filePaths[0]);
-                // store.set("projects", [...projects, fileObj.filePaths[0]]);
+                // store.set("projects[]", path);
               }
             });
         },
