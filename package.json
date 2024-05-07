@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Hello World!",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,5 +13,7 @@
   "devDependencies": {
     "electron": "^30"
   },
-  "dependencies": {}
+  "dependencies": {
+    "electron-store": "^9.0.0"
+  }
 }

@@ -1,5 +1,20 @@
-const { app, Tray, Menu, dialog } = require("electron");
-const { resolve } = require("path");
+import { app, Tray, Menu, dialog, shell } from "electron";
+import { resolve } from "path";
+import Store from "electron-store";
+
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const schema = {
+  projects: {
+    type: "array",
+  },
+};
+
+const store = new Store({ schema });
 
 let tray = null;
 
@@ -9,6 +24,8 @@ app
     tray = new Tray(
       resolve(__dirname, "assets/images", "trayiconTemplate.png")
     );
+
+    // const projects = store.get("projects");
 
     const contextMenu = Menu.buildFromTemplate([
       {
@@ -22,21 +39,17 @@ app
             .then((fileObj) => {
               if (!fileObj.canceled) {
                 console.log(fileObj.filePaths[0]);
+                // shell.openPath(fileObj.filePaths[0]);
+                // store.set("projects", [...projects, fileObj.filePaths[0]]);
               }
             });
         },
       },
       {
-        label: "Fiat Titano",
-        type: "normal",
-      },
-      {
-        label: "Jeep Compass 4XE",
-        type: "normal",
-      },
-      {
-        label: "Fiat Argo",
-        type: "normal",
+        label: "Help",
+        click: async () => {
+          await shell.openExternal("https://www.electronjs.org/docs");
+        },
       },
     ]);
 
