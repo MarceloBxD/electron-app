@@ -19,6 +19,7 @@
     "prettier": "^3.2.5"
   },
   "dependencies": {
+    "cross-spawn": "^7.0.3",
     "electron-store": "^9.0.0"
   }
 }
