@@ -1,9 +1,7 @@
 import { app, Tray, Menu, dialog, globalShortcut, MenuItem } from 'electron';
 import { resolve } from 'path';
 import Store from 'electron-store';
-
 import spawn from 'cross-spawn';
-
 import { fileURLToPath } from 'url';
 import { dirname, basename } from 'path';
 
@@ -26,6 +24,7 @@ app
     tray = new Tray(resolve(__dirname, 'assets/images', 'trayiconTemplate.png'));
     const projects = store.get('projects');
 
+    // creating a global shortcut
     globalShortcut.register('CmdOrCtrl+N', () => {
       dialog
         .showOpenDialog({
@@ -64,6 +63,7 @@ app
       };
     });
 
+    // creating context menu
     const contextMenu = Menu.buildFromTemplate([
       {
         label: 'Add New Project',
@@ -98,6 +98,7 @@ app
                 },
               });
 
+              //   Adicionando o item ao menu
               contextMenu.append(item);
             })
             .catch(() => {
@@ -119,7 +120,8 @@ app
       ...items,
     ]);
 
-    tray.setToolTip('Mjrs Folders - VSCode');
+    // setting the tray text on hover
+    tray.setToolTip('Mjrs Fast Folders - VSCode');
     tray.setContextMenu(contextMenu);
   })
   .catch((err) => {
