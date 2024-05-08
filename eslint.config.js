@@ -4,12 +4,19 @@ import pluginJs from "@eslint/js";
 export default [
   {
     languageOptions: { globals: globals.browser },
-    rules: {
-      semi: "error",
-      "prefer-const": "error",
+    env: {
+      commonjs: true,
+      node: true,
     },
-    files: ["*.js"],
-    indent: ["error", "tab"],
+    rules: {},
+    extends: ["airbnb-base"],
+    globals: {
+      Atomic: "readonly",
+      SharedArrayBuffer: "readonly",
+    },
+    parserOption: {
+      ecmaVersion: 2021,
+    },
   },
   pluginJs.configs.recommended,
 ];

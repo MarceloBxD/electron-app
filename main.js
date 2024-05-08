@@ -1,18 +1,18 @@
-import { app, Tray, Menu, dialog, globalShortcut, MenuItem } from "electron";
-import { resolve } from "path";
-import Store from "electron-store";
+import { app, Tray, Menu, dialog, globalShortcut, MenuItem } from 'electron';
+import { resolve } from 'path';
+import Store from 'electron-store';
 
-import spawn from "cross-spawn";
+import spawn from 'cross-spawn';
 
-import { fileURLToPath } from "url";
-import { dirname, basename } from "path";
+import { fileURLToPath } from 'url';
+import { dirname, basename } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const schema = {
   projects: {
-    type: "array",
+    type: 'array',
   },
 };
 
@@ -23,20 +23,16 @@ let tray = null;
 app
   .whenReady()
   .then(() => {
-    const menu = Menu.getApplicationMenu();
+    tray = new Tray(resolve(__dirname, 'assets/images', 'trayiconTemplate.png'));
+    const projects = store.get('projects');
 
-    tray = new Tray(
-      resolve(__dirname, "assets/images", "trayiconTemplate.png")
-    );
-    const projects = store.get("projects");
-
-    globalShortcut.register("CmdOrCtrl+N", () => {
+    globalShortcut.register('CmdOrCtrl+N', () => {
       dialog
         .showOpenDialog({
-          properties: ["openDirectory"],
+          properties: ['openDirectory'],
         })
         .then((res) => {
-          store.set("projects", [
+          store.set('projects', [
             ...projects,
             {
               title: basename(res.filePaths[0]),
@@ -48,14 +44,14 @@ app
           const items = new MenuItem({
             label: basename(path),
             click: () => {
-              spawn("code", [path]);
+              spawn('code', [path]);
             },
           });
 
           contextMenu.append(items);
         })
         .catch((err) => {
-          console.log("Error opening dialog", err);
+          console.log('Error opening dialog', err);
         });
     });
 
@@ -63,32 +59,32 @@ app
       return {
         label: project.title,
         click: () => {
-          spawn("code", [project.path]);
+          spawn('code', [project.path]);
         },
       };
     });
 
     const contextMenu = Menu.buildFromTemplate([
       {
-        label: "Add New Project",
-        accelerator: "CmdOrCtrl+N",
+        label: 'Add New Project',
+        accelerator: 'CmdOrCtrl+N',
         click: () => {
           dialog
             .showOpenDialog({
-              properties: ["openDirectory"],
+              properties: ['openDirectory'],
             })
             .then((res) => {
               if (!res.filePaths.length)
                 return dialog.showMessageBox({
-                  message: "No folder selected",
+                  message: 'No folder selected',
                 });
 
-              store.set("projects", [
+              store.set('projects', [
                 ...projects,
                 {
                   title: basename(res.filePaths[0]),
                   click: () => {
-                    spawn("code", [res.filePaths[0]]);
+                    spawn('code', [res.filePaths[0]]);
                   },
                 },
               ]);
@@ -98,7 +94,7 @@ app
               const item = new MenuItem({
                 label: basename(path),
                 click: () => {
-                  spawn("code", [path]);
+                  spawn('code', [path]);
                 },
               });
 
@@ -106,26 +102,26 @@ app
             })
             .catch(() => {
               return dialog.showMessageBox({
-                message: "Error opening dialog",
+                message: 'Error opening dialog',
               });
             });
         },
       },
       {
-        label: "Remove All Files",
+        label: 'Remove All Files',
         click: () => {
-          store.set("projects", []);
+          store.set('projects', []);
         },
       },
       {
-        type: "separator",
+        type: 'separator',
       },
       ...items,
     ]);
 
-    tray.setToolTip("Mjrs Folders - VSCode");
+    tray.setToolTip('Mjrs Folders - VSCode');
     tray.setContextMenu(contextMenu);
   })
   .catch((err) => {
-    console.log("Error creating tray", err);
+    console.log('Error creating tray', err);
   });
