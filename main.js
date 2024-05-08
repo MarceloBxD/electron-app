@@ -1,4 +1,4 @@
-import { app, Tray, Menu, dialog, globalShortcut } from "electron";
+import { app, Tray, Menu, dialog, globalShortcut, MenuItem } from "electron";
 import { resolve } from "path";
 import Store from "electron-store";
 
@@ -23,12 +23,14 @@ let tray = null;
 app
   .whenReady()
   .then(() => {
+    const menu = Menu.getApplicationMenu();
+
     tray = new Tray(
       resolve(__dirname, "assets/images", "trayiconTemplate.png")
     );
     const projects = store.get("projects");
 
-    globalShortcut.register("CmdOrCtrl+O", () => {
+    globalShortcut.register("CmdOrCtrl+N", () => {
       dialog
         .showOpenDialog({
           properties: ["openDirectory"],
@@ -41,6 +43,16 @@ app
               path: res.filePaths[0],
             },
           ]);
+
+          const path = res.filePaths[0];
+          const items = new MenuItem({
+            label: basename(path),
+            click: () => {
+              spawn("code", [path]);
+            },
+          });
+
+          contextMenu.append(items);
         })
         .catch((err) => {
           console.log("Error opening dialog", err);
@@ -57,38 +69,61 @@ app
     });
 
     const contextMenu = Menu.buildFromTemplate([
-      ...items,
       {
-        label: "Add File",
-        accelerator: "CmdOrCtrl+O",
+        label: "Add New Project",
+        accelerator: "CmdOrCtrl+N",
         click: () => {
           dialog
             .showOpenDialog({
               properties: ["openDirectory"],
             })
             .then((res) => {
+              if (!res.filePaths.length)
+                return dialog.showMessageBox({
+                  message: "No folder selected",
+                });
+
               store.set("projects", [
                 ...projects,
                 {
                   title: basename(res.filePaths[0]),
-                  path: res.filePaths[0],
+                  click: () => {
+                    spawn("code", [res.filePaths[0]]);
+                  },
                 },
               ]);
+
+              const path = basename(res.filePaths[0]);
+
+              const item = new MenuItem({
+                label: basename(path),
+                click: () => {
+                  spawn("code", [path]);
+                },
+              });
+
+              contextMenu.append(item);
             })
-            .catch((err) => {
-              console.log("Error opening dialog", err);
+            .catch(() => {
+              return dialog.showMessageBox({
+                message: "Error opening dialog",
+              });
             });
         },
       },
       {
         label: "Remove All Files",
         click: () => {
-          return store.set("projects", []);
+          store.set("projects", []);
         },
       },
+      {
+        type: "separator",
+      },
+      ...items,
     ]);
 
-    tray.setToolTip("Main Folders - VS Code");
+    tray.setToolTip("Mjrs Folders - VSCode");
     tray.setContextMenu(contextMenu);
   })
   .catch((err) => {
